@@ -11,12 +11,12 @@ A working storage needs:
 3. Optional defaults for `add()` calls.
 
 ```php
-use Mheads\Yii\Filestorage\Repository\DbRepository;
+use Mheads\Yii\Filestorage\Repository\DemoRepository;
 use Mheads\Yii\Filestorage\Storage;
 use Mheads\Yii\Filestorage\StorageProvider;
 use Mheads\Yii\Filestorage\Store\FileSystem\PublicFileSystemStore;
 
-$repository = new DbRepository($db);
+$repository = new DemoRepository('/app/runtime/demo-filestorage.json');
 
 $storage = new Storage(
     repository: $repository,
@@ -36,8 +36,10 @@ StorageProvider::set($storage);
 
 `StorageProvider::set()` is required when you call `getUrl()`, `getContent()`, or `getResource()` on file objects directly.
 
+`DemoRepository` is intended for local examples and manual testing. For production metadata storage, install [`mheads/yii-filestorage-db`](https://github.com/mheads-dev/yii-filestorage-db), [`mheads/yii-filestorage-active-record`](https://github.com/mheads-dev/yii-filestorage-active-record), or implement a repository adapter.
+
 ## Next steps
 
 - [Usage basics](usage.md)
 - [Stores: public and private](stores.md)
-- [Repositories: DB and ActiveRecord](repositories.md)
+- [Repositories](repositories.md)

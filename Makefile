@@ -1,73 +1,44 @@
+CLI_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+$(eval $(sort $(subst :,\:,$(CLI_ARGS))):;@:)
+
+COMPOSE=docker compose -f docker/docker-compose.yml $(if $(wildcard docker/docker-compose.override.yml),-f docker/docker-compose.override.yml)
+
 help: ## Show the list of available commands with description.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 .DEFAULT_GOAL := help
 
-build: ## Build services
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile all build
-up: ## Start services
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile all up -d
+build: ## Build PHP test image
+	$(COMPOSE) build
+
+up: ## Start PHP test container
+	$(COMPOSE) up -d
+
 ps: ## List running services
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml ps
+	$(COMPOSE) ps
+
 stop: ## Stop running services
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile all stop
-down: ## Stop running services and remove containers, networks and volumes
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile all down \
-	--remove-orphans \
-	--volumes
-clear: ## Remove all containers, networks, volumes and images
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile all down \
-	--remove-orphans \
-	--volumes \
-    --rmi all
+	$(COMPOSE) stop
 
-run: ## Run arbitrary command
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile php run \
-	--rm \
-	--entrypoint $(CMD) \
-	php
+down: ## Stop services and remove containers
+	$(COMPOSE) down --remove-orphans
 
-php: ## Run php in container. Example: make php PHP_ARGS="-v"
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile php run \
-	--rm \
-	--entrypoint php \
-	php $(PHP_ARGS)
+run: ## Run arbitrary command. Example: make run CMD="php -v"
+	$(COMPOSE) run --rm php $(CMD)
 
-test-all: test-mysql test-pgsql test-mssql test-sqlite test-oracle test-store
-test-mysql: ## Run MySQL tests
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile mysql up -d
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml exec php-mysql \
-		vendor/bin/phpunit --testsuite Mysql $(RUN_ARGS)
+shell: ## Open shell in PHP container
+	$(COMPOSE) run --rm php bash
 
-test-pgsql: ## Run PostgreSQL tests
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile pgsql up -d
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml exec php-pgsql \
-		vendor/bin/phpunit --testsuite Pgsql $(RUN_ARGS)
+test: ## Run PHPUnit tests in Docker
+	$(COMPOSE) run --rm php vendor/bin/phpunit $(RUN_ARGS)
 
-test-mssql: ## Run MSSQL tests
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile mssql up -d
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml exec php-mssql \
-		vendor/bin/phpunit --testsuite Mssql $(RUN_ARGS)
+psalm: ## Run static analysis using Psalm in Docker
+	$(COMPOSE) run --rm php vendor/bin/psalm --no-cache
 
-test-sqlite: ## Run SQLite tests
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile php up -d
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml exec php \
-		vendor/bin/phpunit --testsuite Sqlite $(RUN_ARGS)
+cs-fixer: ## Run code-style fixer in Docker
+	$(COMPOSE) run --rm php vendor/bin/php-cs-fixer fix $(RUN_ARGS)
 
-test-oracle: ## Run Oracle tests
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile oracle up -d
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml exec php-oracle \
-		bash -c -l 'vendor/bin/phpunit --testsuite Oracle $(RUN_ARGS)'
+cs-check: ## Check code style without changing files in Docker
+	$(COMPOSE) run --rm php vendor/bin/php-cs-fixer fix --dry-run --diff
 
-test-store: ## Run Store tests
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml --profile php up -d
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml exec php \
-		vendor/bin/phpunit --testsuite Store $(RUN_ARGS)
-
-psalm: CMD="vendor/bin/psalm --no-cache" ## Run static analysis using Psalm
-psalm: run
-
-cs-fixer: CMD="vendor/bin/php-cs-fixer fix" ## Run code-style fixer
-cs-fixer: run
-
-shell: CMD="bash" ## Open interactive shell
-shell: run
+composer: ## Run Composer.
+	$(COMPOSE) run --rm php composer $(CLI_ARGS)

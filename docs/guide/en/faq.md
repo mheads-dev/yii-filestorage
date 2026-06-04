@@ -6,16 +6,14 @@ Check:
 
 - file is stored in a public store
 - store has correct `baseUrl`
-- storage is registered in `StorageProvider`
+- storage is registered in `StorageProvider` if you call `$file->getUrl()` directly
 
-## File Is Not Removed On AR Replace/Delete
+Private stores always return `null` for URL.
 
-Check:
+## File Is Not Removed After Replacement
 
-- `FileUpload` has `enableAutoCleaning=true`
-- model uses `PendingUploadedFileOwnerTrait`
-- setter clears file-id field on `null` via `$this->set(...)`
+The core package does not track domain-object lifecycle automatically. When a file is replaced, call `StorageInterface::remove()` or `removeById()` for the old file according to your business rules.
 
 ## Why Is Custom `fileClass` Needed?
 
-When `default` storage is not enough (multi-storage/multi-tenant), custom `fileClass` binds file model to the required storage via `storage()`.
+When the default storage is not enough, for example in multi-storage or multi-tenant setups, custom file classes can bind file objects to a named storage by overriding `storage()`. See [Multiple stores and storages](multiple-stores-and-storages.md).

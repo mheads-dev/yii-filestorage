@@ -3,22 +3,12 @@
 ## Requirements
 
 - PHP 8.3 - 8.5.
-- `yiisoft/db` `^2.0.1`.
 - `yiisoft/files` `^2.1`.
 - `yiisoft/strings` `^2.7`.
 - `psr/http-message` `^2.0`.
-- `yiisoft/active-record` `^1.0.2`.
-- `yiisoft/event-dispatcher` `^1.1`.
 
-## Supported databases
-
-Install the matching DB driver for your DBMS:
-
-- MySQL: `yiisoft/db-mysql`.
-- PostgreSQL: `yiisoft/db-pgsql`.
-- MSSQL: `yiisoft/db-mssql`.
-- SQLite: `yiisoft/db-sqlite`.
-- Oracle: `yiisoft/db-oracle`.
+DB and ActiveRecord integrations are not part of the core package.
+Use [`mheads/yii-filestorage-db`](https://github.com/mheads-dev/yii-filestorage-db), [`mheads/yii-filestorage-active-record`](https://github.com/mheads-dev/yii-filestorage-active-record), or implement `RepositoryInterface` in your application.
 
 ## Installation
 
@@ -28,14 +18,8 @@ Install the package with [Composer](https://getcomposer.org):
 composer require mheads/yii-filestorage
 ```
 
-Optional, if you want to apply package migrations through `yiisoft/db-migration`:
-
-```shell
-composer require --dev yiisoft/db-migration
-```
-
 ## Next steps
 
-- [Migrations](migrations.md)
 - [Configuration with yiisoft/config](configuration-with-config.md)
 - [Manual configuration](configuration-manual.md)
+- [Custom repository and store adapters](custom-adapters.md)

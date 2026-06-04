@@ -28,7 +28,7 @@ use function tempnam;
 use function unlink;
 
 /**
- * Lightweight JSON repository for local/manual facade testing.
+ * Lightweight demo repository for local/manual facade testing.
  * Not intended for production use.
  *
  * @psalm-type FileRow = array{
@@ -50,10 +50,8 @@ use function unlink;
  *     files: list<FileRow>,
  *     lastId: int
  * }
- *
- * @internal
  */
-final class JsonFileRepository implements RepositoryInterface
+final class DemoRepository implements RepositoryInterface
 {
 	/** @var RepoData */
 	private array $data = ['files' => [], 'lastId' => 0];
@@ -64,7 +62,7 @@ final class JsonFileRepository implements RepositoryInterface
 	 * @throws AddException|InvalidConfigException
 	 */
 	public function __construct(
-		private readonly string $jsonFilePath,
+		private readonly string $filePath,
 		private readonly string $fileClass = File::class,
 	) {
 		if(!is_a($this->fileClass, FileInterface::class, true))
@@ -86,17 +84,17 @@ final class JsonFileRepository implements RepositoryInterface
 	 */
 	private function loadData(): void
 	{
-		if(!file_exists($this->jsonFilePath))
+		if(!file_exists($this->filePath))
 		{
 			$this->data = ['files' => [], 'lastId' => 0];
 			$this->saveData();
 			return;
 		}
 
-		$content = file_get_contents($this->jsonFilePath);
+		$content = file_get_contents($this->filePath);
 		if($content === false)
 		{
-			throw new InvalidConfigException("Cannot read JSON file: {$this->jsonFilePath}");
+			throw new InvalidConfigException("Cannot read demo repository file: {$this->filePath}");
 		}
 
 		$data = json_decode($content, true);
@@ -106,7 +104,7 @@ final class JsonFileRepository implements RepositoryInterface
 			|| !is_array($data['files'])
 			|| !is_int($data['lastId'])
 		) {
-			throw new InvalidConfigException("Invalid JSON in file: {$this->jsonFilePath}");
+			throw new InvalidConfigException("Invalid demo repository data in file: {$this->filePath}");
 		}
 
 		$rows = [];
@@ -140,23 +138,23 @@ final class JsonFileRepository implements RepositoryInterface
 		}
 
 		// Write via temp file and atomic rename to avoid partial/corrupted main JSON on crash.
-		$tempFilePath = tempnam(dirname($this->jsonFilePath), 'filestorage_');
+		$tempFilePath = tempnam(dirname($this->filePath), 'filestorage_');
 		if($tempFilePath === false)
 		{
-			throw new AddException("Cannot create temp file for JSON repository");
+			throw new AddException("Cannot create temp file for demo repository");
 		}
 
 		$result = file_put_contents($tempFilePath, $json, LOCK_EX);
 		if($result === false)
 		{
 			@unlink($tempFilePath);
-			throw new AddException("Cannot write to temp JSON file: {$tempFilePath}");
+			throw new AddException("Cannot write to temp demo repository file: {$tempFilePath}");
 		}
 
-		if(!rename($tempFilePath, $this->jsonFilePath))
+		if(!rename($tempFilePath, $this->filePath))
 		{
 			@unlink($tempFilePath);
-			throw new AddException("Cannot move temp JSON file to: {$this->jsonFilePath}");
+			throw new AddException("Cannot move temp demo repository file to: {$this->filePath}");
 		}
 	}
 
