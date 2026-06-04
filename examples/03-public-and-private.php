@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Examples\Support\UploadedFileFactory;
-use Mheads\Yii\Filestorage\Repository\DbRepository;
+use Mheads\Yii\Filestorage\Repository\DemoRepository;
 use Mheads\Yii\Filestorage\Storage;
 use Mheads\Yii\Filestorage\StorageProvider;
 use Mheads\Yii\Filestorage\Store\FileSystem\PrivateFileSystemStore;
@@ -11,18 +11,22 @@ use Mheads\Yii\Filestorage\Store\FileSystem\PublicFileSystemStore;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 require __DIR__ . '/support/UploadedFileFactory.php';
-require __DIR__ . '/support/getDbConnection.php';
 
 /**
  * Example with two stores:
  * - public: URL is available
  * - private: URL is not available
  *
- * One Storage, one DbRepository, store selected by `storeName` in add().
+ * One Storage, one DemoRepository, store selected by `storeName` in add().
  */
 
-$db = getDbConnection();
-$repository = new DbRepository($db);
+$runtimeRoot = __DIR__ . '/runtime';
+if(!is_dir($runtimeRoot))
+{
+    mkdir($runtimeRoot, 0o777, true);
+}
+
+$repository = new DemoRepository($runtimeRoot . '/demo-files.json');
 
 $publicRoot = __DIR__ . '/runtime/mixed-public';
 $privateRoot = __DIR__ . '/runtime/mixed-private';

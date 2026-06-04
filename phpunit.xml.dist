@@ -16,21 +16,6 @@
 		<ini name="error_reporting" value="-1" />
 	</php>
 	<testsuites>
-		<testsuite name="Mysql">
-			<directory>./tests/Driver/Mysql</directory>
-		</testsuite>
-		<testsuite name="Pgsql">
-			<directory>./tests/Driver/Pgsql</directory>
-		</testsuite>
-		<testsuite name="Mssql">
-			<directory>./tests/Driver/Mssql</directory>
-		</testsuite>
-		<testsuite name="Sqlite">
-			<directory>./tests/Driver/Sqlite</directory>
-		</testsuite>
-		<testsuite name="Oracle">
-			<directory>./tests/Driver/Oracle</directory>
-		</testsuite>
 		<testsuite name="Store">
 			<directory>./tests/Store</directory>
 		</testsuite>

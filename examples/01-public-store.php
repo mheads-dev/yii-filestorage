@@ -3,23 +3,27 @@
 declare(strict_types=1);
 
 use App\Examples\Support\UploadedFileFactory;
-use Mheads\Yii\Filestorage\Repository\DbRepository;
+use Mheads\Yii\Filestorage\Repository\DemoRepository;
 use Mheads\Yii\Filestorage\Storage;
 use Mheads\Yii\Filestorage\StorageProvider;
 use Mheads\Yii\Filestorage\Store\FileSystem\PublicFileSystemStore;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 require __DIR__ . '/support/UploadedFileFactory.php';
-require __DIR__ . '/support/getDbConnection.php';
 
 /**
  * Example:
- * - DbRepository stores file metadata in DB.
+ * - DemoRepository stores file metadata in a local demo metadata file.
  * - PublicFileSystemStore stores physical file in a public directory.
  */
 
-$db = getDbConnection();
-$repository = new DbRepository($db);
+$runtimeRoot = __DIR__ . '/runtime';
+if(!is_dir($runtimeRoot))
+{
+    mkdir($runtimeRoot, 0o777, true);
+}
+
+$repository = new DemoRepository($runtimeRoot . '/demo-files.json');
 
 $publicRoot = __DIR__ . '/runtime/public-upload';
 if(!is_dir($publicRoot))

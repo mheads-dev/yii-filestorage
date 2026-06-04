@@ -1,33 +1,36 @@
 # Custom repository and store adapters
 
-Package supports replacing built-in adapters with your own implementations.
+The package is built around contracts, so applications can replace metadata and physical-storage backends independently.
 
 ## Repository (Metadata)
 
-Implement [RepositoryInterface](../../../src/Repository/RepositoryInterface.php) when file metadata is not stored in the package's standard DB table.
+Implement [RepositoryInterface](../../../src/Repository/RepositoryInterface.php) when file metadata is stored outside the built-in `DemoRepository`.
 
 Typical options:
 
-- dedicated table/schema
-- Redis;
-- external HTTP/gRPC service.
+- project database table or schema
+- external HTTP/gRPC service
+- document/key-value storage
+
+For ready DB and ActiveRecord integrations, use adapter packages:
+
+- [`mheads/yii-filestorage-db`](https://github.com/mheads-dev/yii-filestorage-db)
+- [`mheads/yii-filestorage-active-record`](https://github.com/mheads-dev/yii-filestorage-active-record)
 
 ## Store (Physical Files)
 
-Implement [StoreInterface](../../../src/Store/StoreInterface.php) when files are not stored in local FS.
+Implement [StoreInterface](../../../src/Store/StoreInterface.php) when files are not stored in the local filesystem.
 
 Typical options:
 
-- S3/MinIO/Cloud object storage;
-- network file service;
-- internal binary storage.
+- S3/MinIO/Cloud object storage
+- network file service
+- internal binary storage
 
-If store is public (URL needed), implement [PublicStoreInterface](../../../src/Store/PublicStoreInterface.php).
-
-Roadmap: ready adapters for popular backends are planned as separate packages.
+If stored files have public URLs, implement [PublicStoreInterface](../../../src/Store/PublicStoreInterface.php).
 
 ## Integration Pattern
 
-1. Build `Storage` with your `RepositoryInterface` and your `StoreInterface`.
-2. Register it via `StorageProvider::set(...)`.
-3. Use regular package API (`add/find/remove/getUrl/getContent/getResource`).
+1. Build `Storage` with your `RepositoryInterface` and `StoreInterface` implementations.
+2. Register it via `StorageProvider::set(...)` if file objects call `getUrl()`, `getContent()`, or `getResource()` directly.
+3. Use the regular package API: `add()`, `findById()`, `remove()`, `getUrl()`, `getContent()`, and `getResource()`.

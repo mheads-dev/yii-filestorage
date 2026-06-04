@@ -2,7 +2,7 @@
 
 ## Keep controllers thin
 
-Use `StorageInterface` in application services instead of spreading upload, cleanup, and URL logic across controllers and ActiveRecord lifecycle hooks.
+Use `StorageInterface` in application services instead of spreading upload, cleanup, and URL logic across controllers.
 
 ## Use public and private stores deliberately
 
@@ -16,11 +16,11 @@ If code calls `$file->getUrl()`, `$file->getContent()`, or `$file->getResource()
 StorageProvider::set($storage);
 ```
 
-For named storage instances, bind a custom file class through `storage()`. See [Custom file class](custom-file-class.md).
+For named storage instances, bind a custom file class through `storage()`. See [Multiple stores and storages](multiple-stores-and-storages.md).
 
 ## Clean up replaced files intentionally
 
-For ActiveRecord uploads, keep `enableAutoCleaning=true` unless your business logic needs historical files. Make setters clear the file-id field on `null`.
+When a domain object replaces a file, remove the old file through `StorageInterface` unless your business logic needs historical files.
 
 ## Avoid exposing private paths
 

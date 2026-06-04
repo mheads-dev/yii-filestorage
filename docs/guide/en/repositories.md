@@ -1,32 +1,36 @@
-# Repositories: DB and ActiveRecord
+# Repositories
 
-Repositories handle file metadata.
+Repositories handle file metadata through `RepositoryInterface`.
 
-## DbRepository
+## RepositoryInterface
 
-`DbRepository` stores metadata with `yiisoft/db` in the `mh_filestorage_file` table.
+Implement `RepositoryInterface` when file metadata is stored in a database, external service, project model, or another backend.
+
+The repository is responsible for:
+
+- creating a file entity from an uploaded file
+- saving metadata and assigning an id
+- finding metadata by id
+- removing metadata
+
+## DemoRepository
+
+`DemoRepository` is a lightweight local implementation for examples and manual facade testing.
+It is not intended for production metadata storage.
 
 ```php
-use Mheads\Yii\Filestorage\Repository\DbRepository;
+use Mheads\Yii\Filestorage\Repository\DemoRepository;
 
-$repository = new DbRepository($db);
+$repository = new DemoRepository('/app/runtime/demo-filestorage.json');
 ```
 
-Use this when you need a simple DB-backed metadata repository without depending on ActiveRecord models.
+## Adapter Packages
 
-## ActiveRecordRepository
+DB and ActiveRecord implementations are provided by separate adapter packages:
 
-`ActiveRecordRepository` stores metadata through `ArFile` or your custom `ArFile` class.
+- [`mheads/yii-filestorage-db`](https://github.com/mheads-dev/yii-filestorage-db)
+- [`mheads/yii-filestorage-active-record`](https://github.com/mheads-dev/yii-filestorage-active-record)
 
-```php
-use Mheads\Yii\Filestorage\ActiveRecord\ArFile;
-use Mheads\Yii\Filestorage\Repository\ActiveRecordRepository;
+Until an adapter package is installed, production projects should provide their own `RepositoryInterface` implementation.
 
-$repository = new ActiveRecordRepository(ArFile::class);
-```
-
-Use this when your application works with `ArFile` relations and ActiveRecord queries.
-
-## Custom repositories
-
-For non-standard metadata storage, implement `RepositoryInterface`. See [Custom repository and store adapters](custom-adapters.md).
+See [Custom repository and store adapters](custom-adapters.md).

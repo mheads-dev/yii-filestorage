@@ -14,7 +14,7 @@ final readonly class RandomPathGenerator implements PathGeneratorInterface
 {
 	public function __construct(
 		private int $segmentLength = 3,
-		private int $maxAttempts = 1000,
+		private int $maxAttempts = 10,
 	) {}
 
 	#[Override]
