@@ -1,7 +1,8 @@
 {
-    "name": "mheads/yii-filestorage",
-    "type": "library",
-    "license": "BSD-3-Clause",
+	"name": "mheads/yii-filestorage",
+	"description": "Core file storage facade for Yii3/yiisoft projects.",
+	"type": "library",
+	"license": "BSD-3-Clause",
 	"authors": [
 		{
 			"name": "MachineHeads",
@@ -14,17 +15,17 @@
 			"role": "Developer"
 		}
 	],
-    "require": {
+	"require": {
 		"php": "8.3 - 8.5",
-        "yiisoft/strings": "^2.7",
-        "yiisoft/files": "^2.1",
-        "psr/http-message": "^2.0"
-    },
+		"yiisoft/strings": "^2.7",
+		"yiisoft/files": "^2.1",
+		"psr/http-message": "^2.0"
+	},
 	"require-dev": {
-        "phpunit/phpunit": "^12.5",
-        "friendsofphp/php-cs-fixer": "^3.94",
-        "vimeo/psalm": "^6.16",
-        "httpsoft/http-message": "^1.1"
+		"phpunit/phpunit": "^12.5",
+		"friendsofphp/php-cs-fixer": "^3.94",
+		"vimeo/psalm": "^6.16",
+		"httpsoft/http-message": "^1.1"
 	},
 	"autoload": {
 		"psr-4": {
